@@ -1,0 +1,43 @@
+SQL script for import data to crm_sales-details table
+
+
+  INSERT INTO bronze.crm_sales_details (
+    sls_ord_num, sls_prd_key, sls_cust_id, sls_order_dt, sls_ship_dt, sls_due_dt, sls_sales, sls_quantity, sls_price
+)
+SELECT
+    s_col_1, -- sls_ord_num
+    s_col_2, -- sls_prd_key
+    NULLIF(s_col_3, '')::INT, -- sls_cust_id (Клієнт ID)
+
+  -- Умовна логіка очищення Дат (запобігає помилкам з "32154")
+CASE
+    WHEN s_col_4 = '0' OR s_col_4 ~ '^\d+$' THEN NULL -- Якщо '0' або ЛИШЕ ЧИСЛА
+    ELSE s_col_4::DATE
+END, -- sls_order_dt
+
+CASE
+    WHEN s_col_5 = '0' OR s_col_5 ~ '^\d+$' THEN NULL -- Якщо '0' або ЛИШЕ ЧИСЛА
+    ELSE s_col_5::DATE
+END, -- sls_ship_dt
+
+CASE
+    WHEN s_col_6 = '0' OR s_col_6 ~ '^\d+$' THEN NULL -- Якщо '0' або ЛИШЕ ЧИСЛА
+    ELSE s_col_6::DATE
+END, -- sls_due_dt
+
+    -- Числа: COALESCE(NULLIF(..::NUMERIC), 0.00) замінює NULL або порожні/зіпсовані значення на 0
+    COALESCE(NULLIF(s_col_7, '')::NUMERIC(10, 2), 0.00), -- sls_sales (Загальна сума)
+    COALESCE(NULLIF(s_col_8, '')::INT, 0), -- sls_quantity (Кількість)
+    COALESCE(NULLIF(s_col_9, '')::NUMERIC(10, 2), 0.00) -- sls_price (Ціна)
+FROM
+    bronze.crm_sales_details_stage;
+    
+    
+    -- Дозволяємо NULL для дати замовлення
+ALTER TABLE bronze.crm_sales_details ALTER COLUMN sls_order_dt DROP NOT NULL;
+
+-- Додатково, знімемо з інших дат, щоб уникнути повторної помилки
+ALTER TABLE bronze.crm_sales_details ALTER COLUMN sls_ship_dt DROP NOT NULL;
+ALTER TABLE bronze.crm_sales_details ALTER COLUMN sls_due_dt DROP NOT NULL;
+
+TRUNCATE TABLE bronze.crm_sales_details;
