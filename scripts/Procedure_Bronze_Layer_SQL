@@ -116,4 +116,8 @@ begin
 		raise notice 'SQLERRM: %', SQLERRM;
 		raise notice 'SQLSTATE: %', SQLSTATE;
 		raise notice '==================================';
+end;
+$$
+
+SELECT bronze.load_bronze_log_only();
 	
