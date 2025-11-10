@@ -58,7 +58,4 @@ create table bronze.erp_px_cat_g1v2(
 
 
 	
-end;
-$$
 
-SELECT bronze.load_bronze_log_only();
