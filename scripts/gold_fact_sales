@@ -17,3 +17,14 @@ left join gold.dim_products pr
 on sd.sls_prd_key = pr.product_number 
 left join gold.dim_customers cu 
 on sd.sls_cust_id = cu.customer_id 
+
+
+-- Foreign key перевірка приєднання таблиць за ключем
+
+select *
+from gold.fact_sales as f
+left join gold.dim_customers c
+on c.customer_key = f.customer_key 
+left join gold.dim_products p
+on p.product_key  = f.product_key 
+where p.product_key is null
