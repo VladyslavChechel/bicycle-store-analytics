@@ -69,6 +69,6 @@ select 							-- Сегментація покупців по категорія
 -- Average monthly spend
 			case
 				when lifespan = 0 then total_sales
-			end
-			
+				else round(total_sales / lifespan, 0)
+			end as avg_monthly_spend
 from customer_aggregation
