@@ -39,7 +39,7 @@ begin
 	
 	start_time:= clock_timestamp();
 	raise notice '>> Truncating Table: bronze.crm_cust_info';
-	-- 'TRUNCATE TABLE bronze.crm_cust_info';
+	TRUNCATE TABLE bronze.crm_cust_info;
 	raise notice'>> Importing into: bronze.crm_cust_info';
 	end_time:= clock_timestamp();
 	duration_time := EXTRACT (EPOCH FROM (end_time - start_time))::int;
@@ -50,7 +50,7 @@ begin
 	
 	start_time:= clock_timestamp();
 	raise notice '>> Truncating Table: bronze.crm_prd_info';
-	-- 'TRUNCATE TABLE bronze.crm_prd_info';
+	TRUNCATE TABLE bronze.crm_prd_info;
 	raise notice'>> Importing into: bronze.prd_info';
 	end_time:= clock_timestamp();
 	duration_time := EXTRACT (EPOCH FROM (end_time - start_time))::int;
@@ -61,7 +61,7 @@ begin
 	
 	start_time:= clock_timestamp();
 	raise notice '>> Truncating Table: bronz.crm_sales_details';
-	-- 'TRUNCATE TABLE bronze.crm_sales_details';
+	TRUNCATE TABLE bronze.crm_sales_details;
 	raise notice'>> Importing into: bronze.crm_sales_details';
 	end_time:= clock_timestamp();
 	duration_time := EXTRACT (EPOCH FROM (end_time - start_time))::int;
@@ -74,7 +74,7 @@ begin
 	
 	start_time:= clock_timestamp();
 	raise notice '>> Truncating Table: bronze.erp_cust_az12';
-	-- 'TRUNCATE TABLE bronze.erp_cust_az12';
+	TRUNCATE TABLE bronze.erp_cust_az12;
 	raise notice'>> Importing into: bronze.erp_cust_az12';
 	end_time:= clock_timestamp();
 	duration_time := EXTRACT (EPOCH FROM (end_time - start_time))::int;
@@ -85,7 +85,7 @@ begin
 	
 	start_time:= clock_timestamp();
 	raise notice '>> Truncating Table: bronze.erp_loc_a101';
-	-- 'TRUNCATE TABLE bronze.erp_loc_a101';
+	TRUNCATE TABLE bronze.erp_loc_a101;
 	raise notice'>> Importing into: bronze.erp_loc_a101';
 	end_time:= clock_timestamp();
 	duration_time := EXTRACT (EPOCH FROM (end_time - start_time))::int;
@@ -96,7 +96,7 @@ begin
 	
 	start_time:= clock_timestamp();
 	raise notice '>> Truncating Table: bronze.erp_px_cat_g1v2';
-	-- 'TRUNCATE TABLE bronze.erp_px_cat_g1v2';
+	TRUNCATE TABLE bronze.erp_px_cat_g1v2;
 	raise notice'>> Importing into: bronze.erp_px_cat_g1v2';
 	end_time:= clock_timestamp();
 	duration_time := EXTRACT (EPOCH FROM (end_time - start_time))::int;
