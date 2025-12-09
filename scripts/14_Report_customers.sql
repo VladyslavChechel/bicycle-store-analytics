@@ -14,7 +14,9 @@ with basic_query as (		-- Вибираємо основні колонки дл�
 		c.customer_key ,
 		c.customer_number ,
 		concat(c.first_name, ' ', c.last_name ) as customer_name,
-		extract(year from age (c.birthdate) ) as age 
+		extract(year from age (c.birthdate) ) as age,
+		c.country,
+		c.gender
 		from gold.fact_sales s
 		left join gold.dim_customers c
 		on s.customer_key  = c.customer_key 
@@ -33,13 +35,17 @@ customer_aggregation as ( 		-- Основні метрики покупців
 			count(distinct product_key) as total_products,
 			max(order_date) as last_order_date, 
 			(extract('year' from age(max(order_date),min(order_date) ) ) * 12 
-			+ extract('month' from age(max(order_date),min(order_date) ) ))::int as lifespan
+			+ extract('month' from age(max(order_date),min(order_date) ) ))::int as lifespan,
+			country,
+			gender
 	from basic_query
 	group by 
 			customer_key ,
 			customer_number ,
 			customer_name,
-			age
+			age,
+			country,
+			gender
 )
 
 select 							-- Сегментація покупців по категоріям
@@ -47,6 +53,8 @@ select 							-- Сегментація покупців по категорія
 			customer_number ,
 			customer_name,
 			age,
+			country,
+			gender,
 			case 
 				when age < 30 then 'Under 30'
 				when age between 30 and 39 then '30-39'
@@ -71,4 +79,5 @@ select 							-- Сегментація покупців по категорія
 				when lifespan = 0 then total_sales
 				else round(total_sales / lifespan, 0)
 			end as avg_monthly_spend
+			
 from customer_aggregation
