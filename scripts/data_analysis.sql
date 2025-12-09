@@ -87,6 +87,17 @@ group by country
 order by total_customers  desc
 
 
+-- Sales by countries
+select 
+	dc.country,
+	sum(t.sales_amount) as total_sales
+from gold.dim_customers dc
+left join gold.fact_sales t 
+on dc.customer_key = t.customer_key 
+group by country
+order by total_sales desc
+
+
 -- Customers by gender
 select 
 	gender,
