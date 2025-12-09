@@ -103,6 +103,7 @@ order by
 	product_name,
 	order_year
 
+-- Part-to-Whole analysis
 	
 -- Category that contribute the most to overall sales
 with category_sales as (
