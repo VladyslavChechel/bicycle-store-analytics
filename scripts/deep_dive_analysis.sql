@@ -16,28 +16,28 @@ group by country											-- Australia sold  ~35% fewer units, driven by a high
 
 
 -- Досліджуємо вік покупців
+	
 	select 
-		 distinct(customer_number),
+		c.customer_key,
 		concat(c.first_name, ' ', c.last_name) as customer_name,
 		extract (year from age(c.birthdate) ) as age,             -- найстарший покупець - 109р
 		country,
-		p.category,
-		p.subcategory,
-		order_date
+		sum(sales_amount) as total_sales,
+		string_agg(distinct p.category, ', ') as categories_purchased
 	from gold.dim_customers as c 
 	left join gold.fact_sales as s 
 	on c.customer_key = s.customer_key 
 	left join gold.dim_products as p
 	on s.product_key = p.product_key
 	where c.birthdate is not null 
-		and
-			category = 'Bikes'                      -- найстарший покупець який купив Байк- 98р.
-	group by customer_number, customer_name, country,
-		p.category,
-		p.subcategory,
-		c.birthdate,		
-		order_date
+ --		and category = 'Bikes'                      -- найстарший покупець який купив Байк- 98р.
+	group by 
+		c.customer_key,
+		customer_name,
+		country,
+		c.birthdate
 	order by age desc
+	
 	
 	-- Analysis of Customers > 80+
 	select 
