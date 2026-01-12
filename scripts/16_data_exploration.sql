@@ -95,6 +95,20 @@ from gold.fact_sales
 union all
 
 select 
+	'Total # category',
+	count(distinct category )
+from gold.dim_products
+
+union all
+
+select 
+	'Total # subcategory',
+	count(distinct subcategory )
+from gold.dim_products
+
+union all
+	
+select 
 	'Total # Products',
 	count(product_name)
 from gold.dim_products
