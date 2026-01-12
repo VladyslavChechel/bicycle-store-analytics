@@ -1,3 +1,8 @@
+/*
+======================
+Customers Segmentation
+======================
+*/
 
 -- Segment products into cost ranges
 with product_segment as (
