@@ -55,6 +55,7 @@ group by country											-- Australia sold  ~35% fewer units, driven by a high
 	
 	
 	-- Customers segmentation 50+
+	 
 	with cust_age as 
 	(
 		select
@@ -85,4 +86,91 @@ group by country											-- Australia sold  ~35% fewer units, driven by a high
      	country
      from cust_age
      order by age_group asc, number_of_cust desc
+
+
+-- Cross-sell customers and rate
+
+with cust_categories as (
+    select
+        s.customer_key,
+        sum(s.sales_amount) as total_spending,
+        count(distinct p.category) as category_cnt,
+        	(extract('year' from age(max(s.order_date),min(s.order_date) ) ) * 12 
+			+ extract('month' from age(max(s.order_date),min(s.order_date) ) ))::int as lifespan
+    from gold.fact_sales s
+    left join gold.dim_products p
+		on s.product_key = p.product_key 
+    group by s.customer_key
+),
+segment as (
+    select
+        customer_key,
+        case 
+            when lifespan >= 12 and total_spending > 5000 then 'VIP'
+            when lifespan >= 12 and total_spending <= 5000 then 'Regular'
+            else 'New'
+        end as customer_segment
+    from cust_categories
+)
+select
+    seg.customer_segment,
+    count(*) as total_customers,
+    count(*) filter (where cc.category_cnt > 1) as cross_sell_customers,
+    round(
+        count(*) filter (where cc.category_cnt > 1)::numeric
+        / count(*) * 100, 1
+    ) as cross_sell_rate_pct
+from segment seg
+join cust_categories cc
+    on seg.customer_key = cc.customer_key
+group by seg.customer_segment
+order by seg.customer_segment;
+
+
+
+
+
+
+
+-- Check  category = 'Components'
+
+select 
+		p.product_key ,
+		p.product_name ,
+		p.category ,
+		p.subcategory ,
+		p.product_line,
+		p.cost ,
+		s.sales_amount ,
+		s.quantity ,
+		s.price ,
+		s.customer_key ,
+		s.order_date ,
+		s.order_number		
+	from gold.dim_products p 
+	left join GOLD.fact_sales s
+	on p.product_key = s.product_key
+	where 
+		 category = 'Components'
+		 
+		 
+		  -- Total revenue by each customer
+ select 
+ 	c.customer_key,
+ 	c.first_name,
+ 	c.last_name,
+ 	sum(s.sales_amount) as total_revenue,
+ 	c.country 
+ from gold.fact_sales as s
+ left join gold.dim_customers as c
+ on c.customer_key = s.customer_key
+-- where c.country = 'United States'
+ group by
+ 	c.customer_key,
+ 	c.first_name,
+ 	c.last_name,
+ 	c.country 
+ order by total_revenue desc
+	
+
 
