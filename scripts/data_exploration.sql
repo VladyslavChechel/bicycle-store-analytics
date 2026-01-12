@@ -1,3 +1,9 @@
+/*
+ =============
+ Dimensions Exploration
+ ============= 
+ */
+
 
 -- Досліджуємо, з яких країн маємо дані по клієнтам
 
@@ -16,12 +22,20 @@ from gold.dim_products p
 order by 1,2,3
 
 
+
+
+/*
+ =============
+ Date Range Exploration 
+ =============
+ */
+
 -- Досліджуємо дату першого і останнього замовлення
 
 select 
 	min(order_date) as first_order,
 	max(order_date) as last_order,
-	extract (year from  age(max(order_date), min(order_date))) as order_range_years
+	(extract (year from  age(max(order_date), min(order_date))))::int as order_range_years
 from gold.fact_sales s
 
 
@@ -33,6 +47,14 @@ select
 	max(birthdate) as oldest_birthday,
 	extract(year from age(now(), max(birthdate) )) as youngest_age
 from gold.dim_customers c 
+
+
+
+/*
+ =============
+Measures Exploration (Key Metrics)
+==============
+ */
 
 
 -- Виводимо ключові бізнес-метрики
@@ -59,6 +81,13 @@ from gold.fact_sales
 union all
 
 select
+	'Average Sales',
+	round(AVG(sales_amount), 0)
+from gold.fact_sales
+
+union all
+
+select
 	'Total # Orders',
 	count(distinct order_number)
 from gold.fact_sales
@@ -78,7 +107,15 @@ select
 from gold.dim_customers 
 
 
--- Customers by countries
+
+
+/*
+ =============
+Magnitude Analysis
+==============
+ */
+
+-- Покупці за країнами
 select 
 	country,
 	count(customer_key) as total_customers
@@ -87,7 +124,7 @@ group by country
 order by total_customers  desc
 
 
--- Sales by countries
+-- Продажі за країнами
 select 
 	dc.country,
 	sum(t.sales_amount) as total_sales
@@ -98,7 +135,7 @@ group by country
 order by total_sales desc
 
 
--- Customers by gender
+-- Стать покупців
 select 
 	gender,
 	count(customer_key) as total_customers
@@ -107,7 +144,7 @@ group by gender
 order by total_customers  desc 
 
 
--- Products by category
+-- Продукти по категоріям
 select 
 	category,
 	count(product_key) as total_products
@@ -116,7 +153,7 @@ group by category
 order by total_products desc
 
 
--- AVG cost by category
+-- AVG вартість товарів по категоріям
 select 
 	category,
 	round(avg(cost), 0) as avg_cost
@@ -125,7 +162,7 @@ group by category
 order by avg_cost desc
 
 
--- Total revenue for each category
+-- Дохід по категоріям
 select
  	p.category,
  	SUM(s.sales_amount) as total_revenue
@@ -136,23 +173,25 @@ select
  order by total_revenue desc 
  
  
- -- Total revenue by each customer
+ -- Дохід по клієнтам
  select 
  	c.customer_key,
  	c.first_name,
  	c.last_name,
- 	sum(s.sales_amount) as total_revenue
+ 	sum(s.sales_amount) as total_revenue,
+ 	c.country 
  from gold.fact_sales as s
  left join gold.dim_customers as c
  on c.customer_key = s.customer_key
  group by
  	c.customer_key,
  	c.first_name,
- 	c.last_name
+ 	c.last_name,
+ 	c.country 
  order by total_revenue desc
 
  
- -- Distribution by sold items across countries 
+ -- Розподіл за проданими товарами по країнах 
   select 
  	c.country ,
  	sum(s.quantity ) as total_quantity
@@ -164,7 +203,15 @@ select
  order by total_quantity desc
  
  
- -- Products which generate the highest revenue
+ 
+ 
+ /*
+==============
+Ranking Analysis
+==============
+ */
+
+ -- Продукти, які генерують найвищий дохід
  select 
  	p.product_name,
  	SUM(s.sales_amount) as total_revenue
@@ -176,7 +223,7 @@ select
  limit 10
  
  
- -- Worst-performing products 
+ -- Продукти з найгіршими показниками
  select *
  from (
 		 select 
