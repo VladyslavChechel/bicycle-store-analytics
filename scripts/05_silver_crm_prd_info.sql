@@ -23,8 +23,8 @@ INSERT INTO silver.crm_prd_info (
 )
 select 
 	prd_id,
-	replace (substring(prd_key, 1, 5),'-', '_') as cat_id, 	-- Приводимо стовпець prd_key до формату, який відповідає категорії товарів id в таблиці erp_px_cat_g1v2 для подальшого приєднання таблиць
-	substring(prd_key, 7, length(prd_key)) as prd_key, 		-- Приводимо стовпець prd_key до формату, який відповідає стовпцю sls_prd_key в таблиці crm_sales_details для подальшого приєднання таблиць
+	replace (substring(prd_key, 1, 5),'-', '_') as cat_id, 	-- Перетворюємо стовпець prd_key у формат, який відповідає категорії товарів id в таблиці erp_px_cat_g1v2 для подальшого приєднання таблиць
+	substring(prd_key, 7, length(prd_key)) as prd_key, 		-- Перетворюємо стовпець prd_key у формат, який відповідає стовпцю sls_prd_key в таблиці crm_sales_details для подальшого приєднання таблиць
 	prd_nm,
 	COALESCE(prd_cost, 0) as prd_cost,						-- Замінюємо NULL на "0"
 	case UPPER(TRIM(prd_line))								-- Замінюємо абревіатуру на повну назву в prd_line
