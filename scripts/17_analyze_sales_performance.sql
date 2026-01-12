@@ -1,7 +1,10 @@
-/* ==================================
--- Analyze sales performance over time
-   ==================================
-*/ 
+/*
+ * ======================================
+ *  Analyze sales performance over time
+ * ======================================
+ */
+
+
 
 -- Changes over years
 select 
@@ -27,7 +30,13 @@ group by order_month
 order by order_month
 
 
--- Cumulative analysis
+
+/*
+ * ======================================
+ *  Cumulative analysis
+ * ======================================
+ */
+
 
 -- Calculate total sales per month 
 select 
@@ -37,7 +46,6 @@ from gold.fact_sales s
 where order_date is not null
 group by date_trunc('month', order_date)::date
 order by date_trunc('month', order_date)::date
-
 
 
 -- Running total sales (year)
@@ -57,22 +65,15 @@ from (
 ) as t
 
 
--- Running total sales (month)
-select 
-	order_date,
-	total_sales,
-	sum(total_sales) over (partition by order_date order by order_date) as runnig_total_sales
-from (
-	select 
-	date_trunc('month', order_date)::date as order_date,
-	sum(sales_amount) as total_sales
-	from gold.fact_sales s
-	where order_date is not null
-	group by date_trunc('month', order_date)::date
-) as t
 
 
--- Performance analysis
+/*
+ * ======================================
+ * Performance analysis
+ * ======================================
+ */
+
+
 
 -- Analyze the yearly performance of product by comparing avg sales and previous year's sales
 with yearly_product_sales as (
@@ -104,8 +105,16 @@ from yearly_product_sales
 order by 
 	product_name,
 	order_year
+	
 
--- Part-to-Whole analysis
+	
+	
+/*
+ * ======================================
+ * Part-to-Whole analysis
+ * ======================================
+ */
+	
 	
 -- Category that contribute the most to overall sales
 with category_sales as (
@@ -124,4 +133,27 @@ select
 	concat(round( (total_sales / SUM(total_sales) over () ) * 100, 2), '%') as percentage_of_total
 from category_sales
 order by percentage_of_total desc
-	
+
+
+
+-- Sub-Category that contribute the most to overall sales
+with category_sales as (
+		select
+		category,
+		subcategory, 
+		sum(sales_amount) as total_sales
+	from gold.fact_sales s
+	left join gold.dim_products p
+	on p.product_key = s.product_key
+	where category != 'Bikes'
+	group by category, 
+			 subcategory
+)
+select 
+	category,
+	subcategory,
+	total_sales,
+	SUM(total_sales) over () as overall_sales,
+	concat(round( (total_sales / SUM(total_sales) over () ) * 100, 2), '%') as percentage_of_total
+from category_sales
+order by percentage_of_total desc
