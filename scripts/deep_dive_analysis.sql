@@ -50,7 +50,7 @@ group by country											-- Australia sold  ~35% fewer units, driven by a high
 		where birthdate is not null
 		order by age desc
 		)
-	where age > 79                                                     -- 577 покупців старше 80р;  67 покупці старше 90;  17- старше 100 
+	where age > 79                                                     -- 705 покупців старше 80р;  78 покупці старше 90;  20- старше 100 
 	
 	
 	
