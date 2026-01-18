@@ -1,5 +1,4 @@
 -- Перевіряємо NULLs чи Duplicates в Primary key
--- Очікування: no result
 select
 	cst_id,
 	count(*)
@@ -34,7 +33,6 @@ where rank_last != 1
 -- Перевіряємо колонки на наявність зайвих "Пробілів"
 -- (cst_firstname, cst_lastname) - потрібно доопрацювати
 -- (cst_key, cst_marital_status, cst_gndr) - все ок
--- Очікування: no result
 select 
 	cst_gndr
 from bronze.crm_cust_info
